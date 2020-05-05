@@ -1,20 +1,90 @@
 import pygame
-class Block(object):
+WHITE_COLOR = (255, 255, 255)
+RED_COLOR = (200, 0, 0)
+GREEN_COLOR = (0, 155, 0)
+BLUE_COLOR = (0, 0, 200)
+GREY_COLOR = (100, 100, 100)
+PURPLE_COLOR = (150, 0, 150)
+BLACK_COLOR = (0, 0, 0)
 
+class Block:
+    '''
+    status:
+        0 - hiden block
+        1 - unveiled block
+        2 - bomb flag
+        3 - "may be bomb" flag
+    '''
     def __init__(self, screen, size):
         self.screen = screen
         self.x = 0
         self.y = 0
+        self.bw = 0
+        self.bh = 0
         self.size = size
         self.status = 0
         self.isBomb = False
         self.neighbours = 0
+        self.bomb_draw = False
 
     def draw(self):
-        if self.status:
-            self.color = (255, 255, 255)
+        '''
+        Draws block
+        '''
+        font = pygame.font.SysFont("timesnewroman", 20, bold=True)
+        font_color = BLACK_COLOR
+
+        if self.neighbours == 1:
+            font_color = BLUE_COLOR
+        elif self.neighbours == 2:
+            font_color = GREEN_COLOR
+        elif self.neighbours == 3:
+            font_color = RED_COLOR
+        elif self.neighbours == 4:
+            font_color = PURPLE_COLOR
+
+        text = font.render(str(self.neighbours), True, font_color)
+
+        if self.status == 1:
+            self.color = WHITE_COLOR
+        elif self.status == 2:
+            self.color = RED_COLOR
+        elif self.status == 3:
+            self.color = BLUE_COLOR
+
         else:
-            self.color = (255, 100, 0)
+            self.color = GREY_COLOR
+
+        textRect = text.get_rect()
         pygame.draw.rect(self.screen, self.color, pygame.Rect(self.x, self.y, self.size, self.size))
-    def count_bombs(self):
-        pass
+
+        if self.neighbours:
+            textRect.center = (self.x + self.size // 2, self.y + self.size // 2)
+            self.screen.blit(text, textRect)
+
+        if self.bomb_draw:
+            self.neighbours = 0
+            pygame.draw.circle(self.screen, BLACK_COLOR, (self.x + self.size // 2, self.y + self.size // 2),
+                               self.size // 4)
+
+
+    def reveal(self):
+        '''
+        Reveals the block
+        '''
+        if not self.status:
+            self.status = 1
+
+    def set_bomb_flag(self):
+        self.status = 2
+
+    def set_maybe_flag(self):
+        self.status = 3
+
+    def reset_status(self):
+        self.status = 0
+
+    def boom(self):
+        if self.isBomb:
+            self.reveal()
+            self.bomb_draw = True
