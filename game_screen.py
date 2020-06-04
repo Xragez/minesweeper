@@ -2,10 +2,10 @@ import random
 import pygame
 from block import Block
 LIGHT_GREY_COLOR = (200, 200, 200)
+
 class GameScreen:
-    def __init__(self, game, bombs, block_size=25):
-        x = 10
-        y = 10
+    def __init__(self, game, bombs, width, height, block_size=25):
+
         self.game = game
         self.bw = game.bw
         self.bh = game.bh
@@ -13,7 +13,11 @@ class GameScreen:
         self.num_of_bombs = bombs
         self.width = self.bw * (self.block_size + 2) + 20
         self.height = self.bh * (self.block_size + 2) + 20
+        self.board_width = width
+        self.board_height = height
         self.game_net = [[Block(game.screen, block_size) for i in range(self.bw)] for j in range(self.bh)]
+        x = (self.board_width - self.width) // 2 + 10
+        y = (self.board_height - self.height) // 2 + 10
         for i in range(self.bw):
             for j in range(self.bh):
                 self.game_net[i][j].x = x
@@ -21,13 +25,14 @@ class GameScreen:
                 self.game_net[i][j].bw = i
                 self.game_net[i][j].bh = j
                 y += self.game_net[i][j].size + 2
-            y = 10
+            y = (self.board_height - self.height) // 2 + 10
             x += self.game_net[i][j].size + 2
+            self.bomb_set = None
         self.place_bombs()
     def draw(self):
-        '''
+        """
         Draws game board
-        '''
+        """
         pass
         self.draw_background()
         for i in range(self.bh):
@@ -35,15 +40,17 @@ class GameScreen:
                 self.game_net[i][j].draw()
 
     def draw_background(self):
-        '''
+        """
         Draws background for the board
-        '''
-        pygame.draw.rect(self.game.screen, LIGHT_GREY_COLOR, pygame.Rect(0, 0, self.width, self.height))
+        """
+        x0 = (self.board_width - self.width)//2
+        y0 = (self.board_height - self.height)//2
+        pygame.draw.rect(self.game.screen, LIGHT_GREY_COLOR, pygame.Rect(x0, y0, self.width, self.height))
 
     def neighbours_list(self, block):
-        '''
+        """
         Returns a list of adjacent blocks
-        '''
+        """
         i = block.bw
         j = block.bh
         list = []
@@ -53,8 +60,6 @@ class GameScreen:
                         (b >= 0 and b <= (self.bh - 1)) and
                                             (a != i or b != j)):
                     list.append((a, b))
-        print(self.game_net[i][j].bh,self.game_net[i][j].bw)
-        print(list)
         return list
 
     def board_reveal(self, block):
@@ -66,25 +71,24 @@ class GameScreen:
                     self.board_reveal(self.game_net[x][y])
 
     def count_bombs(self, nlist, block):
-        '''
+        """
         Counts adjacent bombs
-        '''
+        """
         bombs = 0
         for a, b in nlist:
             if self.game_net[a][b].isBomb:
                 bombs += 1
         block.neighbours = bombs
-        print(bombs)
         return bombs
-    def place_bombs(self):
-        '''
-        Places bombs in random positions
 
-        '''
+    def place_bombs(self):
+        """
+        Places bombs in random positions
+        """
         bombs_set = set()
         while len(bombs_set) < self.num_of_bombs:
             bombs_set.add((random.randrange(0, self.bw), random.randrange(0, self.bh)))
-        print(bombs_set)
+        self.bomb_set = bombs_set.copy()
         for x, y in bombs_set:
             self.game_net[x][y].isBomb = True
 
@@ -101,28 +105,55 @@ class GameScreen:
             return -1, -1
 
     def block_on_click(self):
-        '''
+        """
         Checks on which block is the mouse cursor,
         if there's a bomb in this block then game is over,
         if not then the block is being revealed
-        '''
+        :return: False when there is no bomb on that block
+                 True when there is a bomb, or when all bombs have been revealed
+        """
         coordinates = pygame.mouse.get_pos()
         i, j = self.coords(coordinates)
         if not (i, j) == (-1, -1):
             if self.game_net[i][j].status == 0:
                 if self.game_net[i][j].isBomb:
-                    self.game.game_over()
+                    return True
                 self.board_reveal(self.game_net[i][j])
+            return self.check_bombs()
+
     def on_right_click(self):
-        '''
+        """
         Handles bomb flag
-        '''
+        :return: False when there are hidden bombs left
+                 True when all bombs have been found
+        """
         coordinates = pygame.mouse.get_pos()
         i, j = self.coords(coordinates)
         if not (i, j) == (-1, -1):
             if self.game_net[i][j].status == 0:
                 self.game_net[i][j].set_bomb_flag()
+                if self.game_net[i][j].isBomb:
+                    self.bomb_set.remove((i, j))
             elif self.game_net[i][j].status == 2:
                 self.game_net[i][j].set_maybe_flag()
+                if self.game_net[i][j].isBomb:
+                    self.bomb_set.add((i, j))
             elif self.game_net[i][j].status == 3:
                 self.game_net[i][j].reset_status()
+        return self.check_bombs()
+
+    def check_bombs(self):
+        """
+        CHecks if all bombs have been found
+        :return: False when there are hidden bombs left
+                 True when all bombs have been found
+        """
+        print(self.bomb_set)
+        if len(self.bomb_set) == 0:
+            return True
+        for i in range(self.bh):
+            for j in range(self.bw):
+                if (not self.game_net[i][j].isBomb) and self.game_net[i][j].status == 0:
+                    return False
+        return True
+

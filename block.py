@@ -8,13 +8,13 @@ PURPLE_COLOR = (150, 0, 150)
 BLACK_COLOR = (0, 0, 0)
 
 class Block:
-    '''
+    """
     status:
-        0 - hiden block
+        0 - hidden block
         1 - unveiled block
         2 - bomb flag
         3 - "may be bomb" flag
-    '''
+    """
     def __init__(self, screen, size):
         self.screen = screen
         self.x = 0
@@ -28,9 +28,9 @@ class Block:
         self.bomb_draw = False
 
     def draw(self):
-        '''
+        """
         Draws block
-        '''
+        """
         font = pygame.font.SysFont("timesnewroman", 20, bold=True)
         font_color = BLACK_COLOR
 
@@ -69,9 +69,9 @@ class Block:
 
 
     def reveal(self):
-        '''
+        """
         Reveals the block
-        '''
+        """
         if not self.status:
             self.status = 1
 
