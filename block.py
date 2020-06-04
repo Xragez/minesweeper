@@ -1,11 +1,5 @@
 import pygame
-WHITE_COLOR = (255, 255, 255)
-RED_COLOR = (200, 0, 0)
-GREEN_COLOR = (0, 155, 0)
-BLUE_COLOR = (0, 0, 200)
-GREY_COLOR = (100, 100, 100)
-PURPLE_COLOR = (150, 0, 150)
-BLACK_COLOR = (0, 0, 0)
+from colors import *
 
 class Block:
     """
@@ -26,6 +20,7 @@ class Block:
         self.isBomb = False
         self.neighbours = 0
         self.bomb_draw = False
+        self.cheats_enabled = False
 
     def draw(self):
         """
@@ -54,6 +49,9 @@ class Block:
 
         else:
             self.color = GREY_COLOR
+
+        if self.status == 0 and self.cheats_enabled and self.isBomb:
+            self.color = DARK_GREY_COLOR
 
         textRect = text.get_rect()
         pygame.draw.rect(self.screen, self.color, pygame.Rect(self.x, self.y, self.size, self.size))

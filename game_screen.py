@@ -1,7 +1,7 @@
 import random
 import pygame
+from colors import *
 from block import Block
-LIGHT_GREY_COLOR = (200, 200, 200)
 
 class GameScreen:
     def __init__(self, game, bombs, width, height, block_size=25):
@@ -29,6 +29,7 @@ class GameScreen:
             x += self.game_net[i][j].size + 2
             self.bomb_set = None
         self.place_bombs()
+        self.bomb_flag_counter = game.num_of_bombs
     def draw(self):
         """
         Draws game board
@@ -110,7 +111,7 @@ class GameScreen:
         if there's a bomb in this block then game is over,
         if not then the block is being revealed
         :return: False when there is no bomb on that block
-                 True when there is a bomb, or when all bombs have been revealed
+                 True when there is a bomb
         """
         coordinates = pygame.mouse.get_pos()
         i, j = self.coords(coordinates)
@@ -119,7 +120,7 @@ class GameScreen:
                 if self.game_net[i][j].isBomb:
                     return True
                 self.board_reveal(self.game_net[i][j])
-            return self.check_bombs()
+            return False
 
     def on_right_click(self):
         """
@@ -132,6 +133,7 @@ class GameScreen:
         if not (i, j) == (-1, -1):
             if self.game_net[i][j].status == 0:
                 self.game_net[i][j].set_bomb_flag()
+
                 if self.game_net[i][j].isBomb:
                     self.bomb_set.remove((i, j))
             elif self.game_net[i][j].status == 2:
@@ -156,4 +158,3 @@ class GameScreen:
                 if (not self.game_net[i][j].isBomb) and self.game_net[i][j].status == 0:
                     return False
         return True
-

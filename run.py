@@ -1,22 +1,14 @@
 import pygame, sys
 from block import Block
+from colors import *
 from game_screen import GameScreen
 import time
 
-B_WIDTH, B_HEIGHT = 15, 15 # Game board size in blocks
+B_WIDTH, B_HEIGHT = 8, 8 # Game board size in blocks
 W_WIDTH, W_HEIGHT = 600, 425  # Window size
 BOARD_WIDTH, BOARD_HEIGHT = 425, 425  # Board size
-INFO_WIDTH, INFO_HEIGHT = 285, 425
+INFO_WIDTH, INFO_HEIGHT = 175, 425
 NUM_OF_BOMBS = 10  # Number of bombs
-WHITE_COLOR = (255, 255, 255)
-RED_COLOR = (200, 0, 0)
-GREEN_COLOR = (0, 155, 0)
-BLUE_COLOR = (0, 0, 200)
-GREY_COLOR = (100, 100, 100)
-PURPLE_COLOR = (150, 0, 150)
-BLACK_COLOR = (0, 0, 0)
-YELLOW_COLOR = (200, 200, 0)
-LIGHT_GREY_COLOR = (200, 200, 200)
 LEFT = 1
 RIGHT = 3
 
@@ -72,11 +64,13 @@ class InfoScreen:
         self.freeze = True
 
     def draw(self):
+        button_width = 100
+        middle_x = self.x + self.width//2 - button_width//2
         self.draw_background()
         self.draw_timer()
-        self.button("Restart", self.x + 40, self.y + 50, 100, 30, LIGHT_GREY_COLOR, WHITE_COLOR, )
-        self.button("Settings", self.x + 40, self.y + 320, 100, 30, LIGHT_GREY_COLOR, WHITE_COLOR)
-        self.button("EXIT", self.x + 40, self.y + 380, 100, 30, LIGHT_GREY_COLOR, WHITE_COLOR, 'sys.exit(0)')
+        self.button("Restart", middle_x, self.y + 50, button_width, 30, LIGHT_GREY_COLOR, WHITE_COLOR, )
+        self.button("Settings", middle_x, self.y + 320, button_width, 30, LIGHT_GREY_COLOR, WHITE_COLOR)
+        self.button("EXIT", middle_x, self.y + 380, button_width, 30, LIGHT_GREY_COLOR, WHITE_COLOR, 'sys.exit(0)')
 
     def end_msg(self):
         msg = ''
@@ -88,7 +82,7 @@ class InfoScreen:
         smallText = pygame.font.SysFont("timesnewroman", 20)
         textSurf = smallText.render(msg, True, RED_COLOR)
         textRect = textSurf.get_rect()
-        textRect.center = (self.x + self.width//3, self.y + self.height//4)
+        textRect.center = (self.x + self.width//2, self.y + self.height//4)
         self.game.screen.blit(textSurf, textRect)
 
 class Game:
@@ -100,7 +94,8 @@ class Game:
         self.width = W_WIDTH
         self.height = W_HEIGHT
         self.screen = pygame.display.set_mode((self.width, self.height))
-        self.game_screen = GameScreen(self, NUM_OF_BOMBS, BOARD_WIDTH, BOARD_HEIGHT)
+        self.num_of_bombs = NUM_OF_BOMBS
+        self.game_screen = GameScreen(self, self.num_of_bombs, BOARD_WIDTH, BOARD_HEIGHT)
         self.info_screen = InfoScreen(self, BOARD_WIDTH, 0, INFO_WIDTH, INFO_HEIGHT)
         self.clock = pygame.time.Clock()
         self.timer_sec = 0
@@ -113,9 +108,17 @@ class Game:
         """
         Main loop
         """
+        cheat_code = ['x', 'y', 'z', 'z', 'y']
+        key_queue = []
         self.draw()
         while True:
             for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    key_queue.append(event.unicode)
+                    if len(key_queue) >= 6:
+                        key_queue.pop(0)
+                    if key_queue == cheat_code:
+                        self.xyzzy()
                 if (event.type == pygame.QUIT or
                         (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
                     sys.exit(0)
@@ -152,6 +155,11 @@ class Game:
                 self.game_screen.game_net[x][y].boom()
         self.over = True
 
+    def xyzzy(self):
+        for x in range(B_WIDTH):
+            for y in range(B_HEIGHT):
+                self.game_screen.game_net[x][y].cheats_enabled = True
+        self.draw()
 
 def main():
     pygame.init()
