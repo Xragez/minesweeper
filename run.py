@@ -7,7 +7,7 @@ B_WIDTH, B_HEIGHT = 15, 15 # Game board size in blocks
 W_WIDTH, W_HEIGHT = 600, 425  # Window size
 BOARD_WIDTH, BOARD_HEIGHT = 425, 425  # Board size
 INFO_WIDTH, INFO_HEIGHT = 285, 425
-NUM_OF_BOMBS = 5  # Number of bombs
+NUM_OF_BOMBS = 10  # Number of bombs
 WHITE_COLOR = (255, 255, 255)
 RED_COLOR = (200, 0, 0)
 GREEN_COLOR = (0, 155, 0)
@@ -31,7 +31,6 @@ class InfoScreen:
         self.time_sec = 0
         self.time_min = 0
         self.freeze = False
-        self.game_msg = ''
 
     def button(self, msg, x, y, w, h, ic, ac, action=None):
         mouse = pygame.mouse.get_pos()
@@ -79,9 +78,15 @@ class InfoScreen:
         self.button("Settings", self.x + 40, self.y + 320, 100, 30, LIGHT_GREY_COLOR, WHITE_COLOR)
         self.button("EXIT", self.x + 40, self.y + 380, 100, 30, LIGHT_GREY_COLOR, WHITE_COLOR, 'sys.exit(0)')
 
-    def show_msg(self):
+    def end_msg(self):
+        msg = ''
+        if self.game.win == 1:
+            msg = "You Win"
+        elif self.game.win == 0:
+            msg = "Game Over"
+
         smallText = pygame.font.SysFont("timesnewroman", 20)
-        textSurf = smallText.render(self.game_msg, True, RED_COLOR)
+        textSurf = smallText.render(msg, True, RED_COLOR)
         textRect = textSurf.get_rect()
         textRect.center = (self.x + self.width//3, self.y + self.height//4)
         self.game.screen.blit(textSurf, textRect)
@@ -102,6 +107,7 @@ class Game:
         self.time_start = time.time()
         self.over = False
         self.freeze = False
+        self.win = -1
 
     def run(self):
         """
@@ -116,15 +122,15 @@ class Game:
                 if not self.freeze:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT:
                         if self.game_screen.block_on_click():
-                            print("koniec")
-                            self.info_screen.game_msg = "Game Over"
+                            self.win = 0
                             self.game_over()
-
+                        elif self.game_screen.check_bombs():
+                            self.win = 1
+                            self.game_over()
                         self.draw()
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT:
                         if self.game_screen.on_right_click():
-                            print("koniec")
-                            self.info_screen.game_msg = "You Win"
+                            self.win = 1
                             self.game_over()
                         self.draw()
 
@@ -136,7 +142,7 @@ class Game:
 
     def draw_info(self):
         self.info_screen.draw()
-        self.info_screen.show_msg()
+        self.info_screen.end_msg()
 
     def game_over(self):
         self.info_screen.freeze_time()
