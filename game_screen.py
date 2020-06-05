@@ -131,17 +131,19 @@ class GameScreen:
         coordinates = pygame.mouse.get_pos()
         i, j = self.coords(coordinates)
         if not (i, j) == (-1, -1):
-            if self.game_net[i][j].status == 0:
-                self.game_net[i][j].set_bomb_flag()
-
-                if self.game_net[i][j].isBomb:
-                    self.bomb_set.remove((i, j))
-            elif self.game_net[i][j].status == 2:
+            if self.game_net[i][j].status == 2:
+                self.bomb_flag_counter += 1
                 self.game_net[i][j].set_maybe_flag()
                 if self.game_net[i][j].isBomb:
                     self.bomb_set.add((i, j))
             elif self.game_net[i][j].status == 3:
                 self.game_net[i][j].reset_status()
+            elif self.bomb_flag_counter > 0:
+                if self.game_net[i][j].status == 0:
+                    self.game_net[i][j].set_bomb_flag()
+                    self.bomb_flag_counter -= 1
+                    if self.game_net[i][j].isBomb:
+                        self.bomb_set.remove((i, j))
         return self.check_bombs()
 
     def check_bombs(self):
@@ -150,7 +152,6 @@ class GameScreen:
         :return: False when there are hidden bombs left
                  True when all bombs have been found
         """
-        print(self.bomb_set)
         if len(self.bomb_set) == 0:
             return True
         for i in range(self.bh):

@@ -4,11 +4,11 @@ from colors import *
 from game_screen import GameScreen
 import time
 
-B_WIDTH, B_HEIGHT = 8, 8 # Game board size in blocks
+B_WIDTH, B_HEIGHT = 15, 15 # Game board size in blocks
 W_WIDTH, W_HEIGHT = 600, 425  # Window size
 BOARD_WIDTH, BOARD_HEIGHT = 425, 425  # Board size
 INFO_WIDTH, INFO_HEIGHT = 175, 425
-NUM_OF_BOMBS = 10  # Number of bombs
+NUM_OF_BOMBS = 20  # Number of bombs
 LEFT = 1
 RIGHT = 3
 
@@ -68,9 +68,18 @@ class InfoScreen:
         middle_x = self.x + self.width//2 - button_width//2
         self.draw_background()
         self.draw_timer()
-        self.button("Restart", middle_x, self.y + 50, button_width, 30, LIGHT_GREY_COLOR, WHITE_COLOR, )
+        self.button("Restart", middle_x, self.y + 50, button_width, 30,
+                    LIGHT_GREY_COLOR, WHITE_COLOR, "self.game.restart_game()")
         self.button("Settings", middle_x, self.y + 320, button_width, 30, LIGHT_GREY_COLOR, WHITE_COLOR)
         self.button("EXIT", middle_x, self.y + 380, button_width, 30, LIGHT_GREY_COLOR, WHITE_COLOR, 'sys.exit(0)')
+        self.end_msg()
+        self.bomb_counter()
+    def bomb_counter(self):
+        smallText = pygame.font.SysFont("timesnewroman", 20)
+        textSurf = smallText.render("Bombs: " + str(+self.game.game_screen.bomb_flag_counter), True, RED_COLOR)
+        textRect = textSurf.get_rect()
+        textRect.center = (self.x + self.width // 2, self.y + self.height // 3)
+        self.game.screen.blit(textSurf, textRect)
 
     def end_msg(self):
         msg = ''
@@ -100,7 +109,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.timer_sec = 0
         self.time_start = time.time()
-        self.over = False
+        self.restart = False
         self.freeze = False
         self.win = -1
 
@@ -108,10 +117,11 @@ class Game:
         """
         Main loop
         """
+
         cheat_code = ['x', 'y', 'z', 'z', 'y']
         key_queue = []
         self.draw()
-        while True:
+        while not self.restart:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     key_queue.append(event.unicode)
@@ -140,12 +150,14 @@ class Game:
             self.draw_info()
             pygame.display.flip()
 
+    def restart_game(self):
+        self.restart = True
+
     def draw(self):
         self.game_screen.draw()
 
     def draw_info(self):
         self.info_screen.draw()
-        self.info_screen.end_msg()
 
     def game_over(self):
         self.info_screen.freeze_time()
@@ -162,10 +174,13 @@ class Game:
         self.draw()
 
 def main():
-    pygame.init()
-    pygame.display.set_caption('Minesweeper')
-    game = Game()
-    game.run()
+    while True:
+        pygame.init()
+        pygame.display.set_caption('Minesweeper')
+        game = Game()
+        game.run()
+        del game
+
 
 
 if __name__ == "__main__":
