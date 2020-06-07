@@ -1,16 +1,10 @@
 import os
-
+from default import *
 import pygame, sys
 from info_screen import MenuScreen
 from info_screen import InfoScreen
 from game_screen import GameScreen
 import time
-
-W_WIDTH, W_HEIGHT = 600, 425  # Window size
-BOARD_WIDTH, BOARD_HEIGHT = 425, 425  # Board size
-INFO_WIDTH, INFO_HEIGHT = 175, 425  # info and menu size
-LEFT = 1
-RIGHT = 3
 
 class FileLoadErrorException(Exception):
     pass

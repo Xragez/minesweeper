@@ -1,2 +1,10 @@
 B_WIDTH, B_HEIGHT = 10, 10  # Game board size in blocks
 NUM_OF_BOMBS = 20  # Number of bombs
+W_WIDTH, W_HEIGHT = 600, 425  # Window size
+BOARD_WIDTH, BOARD_HEIGHT = 425, 425  # Board size
+INFO_WIDTH, INFO_HEIGHT = 175, 425  # info and menu size
+BOARD_MIN = 2
+BOARD_MAX = 15
+BOMB_MIN = 1
+LEFT = 1
+RIGHT = 3

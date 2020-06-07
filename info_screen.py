@@ -2,8 +2,14 @@ import pygame, time, sys
 from colors import *
 from default import *
 
+
 # Number of blocks x and y
 # Number of bombs
+
+class WrongSettingsException(Exception):
+    pass
+
+
 class InfoScreen:
     def __init__(self, game, x, y, width, height):
         """
@@ -21,6 +27,7 @@ class InfoScreen:
         self.time_sec = 0
         self.time_min = 0
         self.freeze = False
+        #self.bomb_counter = Text(game.screen, self.x + self.width // 2, self.y + self.height // 3, "timesnewroman", 20, RED_COLOR)
 
     def button(self, msg, x, y, w, h, ic, ac, action=None):
         """
@@ -41,6 +48,7 @@ class InfoScreen:
             pygame.draw.rect(self.game.screen, ac, (x, y, w, h))
 
             if click[0] == 1 and action is not None:
+                pygame.time.wait(100)
                 exec(action)
 
         else:
@@ -104,6 +112,7 @@ class InfoScreen:
         """
         Shows how many bombs are left
         """
+
         smallText = pygame.font.SysFont("timesnewroman", 20)
         textSurf = smallText.render("Bombs: " + str(+self.game.game_screen.bomb_flag_counter), True, RED_COLOR)
         textRect = textSurf.get_rect()
@@ -140,9 +149,10 @@ class MenuScreen(InfoScreen):
         """
         super().__init__(game, x, y, width, height)
         self.screen = game.screen
-        self.bw = TextArea(self.screen, x + 20, y + 20, 40, 30, str(self.game.bw))
-        self.bh = TextArea(self.screen, x + 20, y + 60, 40, 30, str(self.game.bh))
-        self.nob = TextArea(self.screen, x + 20, y + 100, 40, 30, str(self.game.num_of_bombs))
+        self.bw = TextArea(self.screen, x + 20, y + 20, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bw))
+        self.bh = TextArea(self.screen, x + 20, y + 60, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bh))
+        self.nob = TextArea(self.screen, x + 20, y + 100, 40, 30, BOMB_MIN,
+                            int(self.bw.getText()) * int(self.bh.getText()), str(self.game.num_of_bombs))
 
     def on_button_click(self):
         self.game.show_menu = True
@@ -163,7 +173,7 @@ class MenuScreen(InfoScreen):
         self.button("Back", middle_x, self.y + 340, button_width, 30,
                     LIGHT_GREY_COLOR, WHITE_COLOR, 'self.game.show_menu = False')
         self.button("Apply", middle_x, self.y + 380, button_width, 30,
-                    LIGHT_GREY_COLOR, WHITE_COLOR, 'self.game.apply_settings()')
+                    LIGHT_GREY_COLOR, WHITE_COLOR, 'self.apply()')
         self.bw.draw(self.screen)
         self.bh.draw(self.screen)
         self.nob.draw(self.screen)
@@ -173,8 +183,18 @@ class MenuScreen(InfoScreen):
         self.bh.events(event)
         self.nob.events(event)
 
+    def apply(self):
+        try:
+            if self.bw.check() and self.bh.check() and self.nob.check():
+                self.game.apply_settings()
+            else:
+                raise WrongSettingsException
+        except WrongSettingsException:
+            print("Wrong settings")
+
+
 class TextArea:
-    def __init__(self, screen, x, y, w, h, text=''):
+    def __init__(self, screen, x, y, w, h, min, max, text=''):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.color = LIGHT_GREY_COLOR
@@ -185,6 +205,8 @@ class TextArea:
         self.txt_surface = self.font.render(self.text, True, self.text_color)
         self.last_key = None
         self.max_signs = 3
+        self.min_num = min
+        self.max_num = max
 
     def getText(self):
         return self.text
@@ -198,6 +220,7 @@ class TextArea:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 self.active = not self.active
+                pygame.time.wait(100)
             else:
                 self.active = False
             self.color = RED_COLOR if self.active else LIGHT_GREY_COLOR
@@ -217,3 +240,26 @@ class TextArea:
                 self.txt_surface = self.font.render(self.text, True, self.text_color)
         if event.type == pygame.KEYUP:
             self.last_key = None
+
+    def check(self):
+        return self.min_num <= int(self.getText()) <= self.max_num
+
+
+class Text:
+    def __init__(self, screen, x, y, width, height, font, font_size, text_color, text=''):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.screen = screen
+        self.text = text
+        self.color = text_color
+        self.font = font
+        self.font_size = font_size
+
+    def draw(self):
+        fontText = pygame.font.SysFont(self.font, self.font_size)
+        textSurf = fontText.render(self.text, True, self.color)
+        textRect = textSurf.get_rect()
+        textRect.center = (self.x + self.width // 2, self.y + self.height // 3)
+        self.screen.blit(textSurf, textRect)
