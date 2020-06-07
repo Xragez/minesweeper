@@ -70,7 +70,7 @@ class Block:
         """
         Reveals the block
         """
-        if not self.status:
+        if self.status == 0:
             self.status = 1
 
     def set_bomb_flag(self):
@@ -83,6 +83,9 @@ class Block:
         self.status = 0
 
     def boom(self):
+        """
+        If there is a bomb reveals the block and draw bomb
+        """
         if self.isBomb:
             self.reveal()
             self.bomb_draw = True
