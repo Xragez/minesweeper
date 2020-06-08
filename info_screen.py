@@ -27,7 +27,7 @@ class InfoScreen:
         self.time_sec = 0
         self.time_min = 0
         self.freeze = False
-        #self.bomb_counter = Text(game.screen, self.x + self.width // 2, self.y + self.height // 3, "timesnewroman", 20, RED_COLOR)
+        # self.bomb_counter = Text(game.screen, self.x + self.width // 2, self.y + self.height // 3, "timesnewroman", 20, RED_COLOR)
 
     def button(self, msg, x, y, w, h, ic, ac, action=None):
         """
@@ -149,19 +149,21 @@ class MenuScreen(InfoScreen):
         """
         super().__init__(game, x, y, width, height)
         self.screen = game.screen
-        self.bw = TextArea(self.screen, x + 20, y + 20, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bw))
-        self.bh = TextArea(self.screen, x + 20, y + 60, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bh))
-        self.nob = TextArea(self.screen, x + 20, y + 100, 40, 30, BOMB_MIN,
+        self.bw = TextArea(self.screen, x + 40, y + 50, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bw))
+        self.bh = TextArea(self.screen, x + 40, y + 90, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bh))
+        self.nob = TextArea(self.screen, x + 40, y + 190, 40, 30, BOMB_MIN,
                             int(self.bw.getText()) * int(self.bh.getText()), str(self.game.num_of_bombs))
+        self.bw_text = Text(self.screen, x + 110, y + 60, 20, 20, "timesnewroman", 20, BLACK_COLOR, "Width")
+        self.bh_text = Text(self.screen, x + 110, y + 100, 20, 20, "timesnewroman", 20, BLACK_COLOR, "Height")
+        self.nob_text = Text(self.screen, x + 110, y + 200, 20, 20, "timesnewroman", 20, BLACK_COLOR, "Bombs")
+        self.board = Text(self.screen, x + width // 2, y + 20, 1, 1, "timesnewroman", 20, BLACK_COLOR, "Board:")
+        self.info_text = Text(self.screen, x + width // 2, y + 250, 1, 1, "timesnewroman", 15, BLACK_COLOR, None)
 
     def on_button_click(self):
         self.game.show_menu = True
         self.bw.text = str(self.game.bw)
         self.bh.text = str(self.game.bh)
         self.nob.text = str(self.game.num_of_bombs)
-        self.bw.draw(self.screen)
-        self.bh.draw(self.screen)
-        self.nob.draw(self.screen)
 
     def draw(self):
         """
@@ -177,6 +179,17 @@ class MenuScreen(InfoScreen):
         self.bw.draw(self.screen)
         self.bh.draw(self.screen)
         self.nob.draw(self.screen)
+        self.bw_text.draw()
+        if self.bw.info is not None:
+            self.info_text.text = self.bw.info
+        self.bh_text.draw()
+        if self.bh.info is not None:
+            self.info_text.text = self.bh.info
+        self.nob_text.draw()
+        if self.nob.info is not None:
+            self.info_text.text = self.nob.info
+        self.board.draw()
+        self.info_text.draw()
 
     def text_events(self, event):
         self.bw.events(event)
@@ -184,13 +197,31 @@ class MenuScreen(InfoScreen):
         self.nob.events(event)
 
     def apply(self):
+        maxn = int(self.bw.getText()) * int(self.bh.getText())
+        self.nob.max_num = maxn
         try:
             if self.bw.check() and self.bh.check() and self.nob.check():
                 self.game.apply_settings()
             else:
                 raise WrongSettingsException
         except WrongSettingsException:
-            print("Wrong settings")
+            except_text = Text(self.screen, self.x + self.width // 2,
+                               self.height // 2, 1, 1, "timesnewroman", 20, RED_COLOR, "Wrong value!")
+            self.on_button_click()
+            self.nob.max_num = maxn
+            except_text.draw()
+            pygame.display.flip()
+            pygame.time.wait(1000)
+
+        except ValueError:
+            except_text = Text(self.screen, self.x + self.width // 2,
+                               self.height // 2, 1, 1, "timesnewroman", 20, RED_COLOR, "No value!")
+            self.on_button_click()
+            self.nob.max_num = maxn
+            except_text.draw()
+            pygame.display.flip()
+            pygame.time.wait(1000)
+
 
 
 class TextArea:
@@ -207,6 +238,7 @@ class TextArea:
         self.max_signs = 3
         self.min_num = min
         self.max_num = max
+        self.info = ""
 
     def getText(self):
         return self.text
@@ -215,6 +247,10 @@ class TextArea:
         self.screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
         pygame.draw.rect(screen, self.color, self.rect, 2)
         self.txt_surface = self.font.render(self.text, True, self.text_color)
+        if self.active:
+            self.info = str(f"min: {self.min_num} max: {self.max_num}")
+        else:
+            self.info = None
 
     def events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -235,7 +271,8 @@ class TextArea:
                 else:
                     key = event.unicode
                     if (not key == self.last_key) and len(self.text) < self.max_signs:
-                        self.text += event.unicode
+                        if event.unicode in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+                            self.text += event.unicode
                     self.last_key = event.unicode
                 self.txt_surface = self.font.render(self.text, True, self.text_color)
         if event.type == pygame.KEYUP:

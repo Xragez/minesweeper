@@ -156,6 +156,11 @@ class Game:
 def main():
     while True:
         pygame.init()
+        try:
+            icon = pygame.image.load('icon.png')
+            pygame.display.set_icon(icon)
+        except Exception as ex:
+            print(ex)
         pygame.display.set_caption('Minesweeper')
         game = Game()
         game.run()
