@@ -174,8 +174,8 @@ class GameScreen:
         """
         if len(self.bomb_set) == 0:
             return True
-        for i in range(self.bh):
-            for j in range(self.bw):
+        for i in range(self.bw):
+            for j in range(self.bh):
                 if not (self.game_net[i][j].isBomb or self.game_net[i][j].status == 1):
                     return False
         return True

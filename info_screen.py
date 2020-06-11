@@ -27,7 +27,6 @@ class InfoScreen:
         self.time_sec = 0
         self.time_min = 0
         self.freeze = False
-        # self.bomb_counter = Text(game.screen, self.x + self.width // 2, self.y + self.height // 3, "timesnewroman", 20, RED_COLOR)
 
     def button(self, msg, x, y, w, h, ic, ac, action=None):
         """
@@ -188,6 +187,8 @@ class MenuScreen(InfoScreen):
         self.nob_text.draw()
         if self.nob.info is not None:
             self.info_text.text = self.nob.info
+        if not (self.bw.getText() == '' or self.bh.getText() == ''):
+            self.nob.update_min_max_values(self.nob.min_num, int(self.bw.getText()) * int(self.bh.getText()))
         self.board.draw()
         self.info_text.draw()
 
@@ -197,8 +198,6 @@ class MenuScreen(InfoScreen):
         self.nob.events(event)
 
     def apply(self):
-        maxn = int(self.bw.getText()) * int(self.bh.getText())
-        self.nob.max_num = maxn
         try:
             if self.bw.check() and self.bh.check() and self.nob.check():
                 self.game.apply_settings()
@@ -208,7 +207,6 @@ class MenuScreen(InfoScreen):
             except_text = Text(self.screen, self.x + self.width // 2,
                                self.height // 2, 1, 1, "timesnewroman", 20, RED_COLOR, "Wrong value!")
             self.on_button_click()
-            self.nob.max_num = maxn
             except_text.draw()
             pygame.display.flip()
             pygame.time.wait(1000)
@@ -217,7 +215,6 @@ class MenuScreen(InfoScreen):
             except_text = Text(self.screen, self.x + self.width // 2,
                                self.height // 2, 1, 1, "timesnewroman", 20, RED_COLOR, "No value!")
             self.on_button_click()
-            self.nob.max_num = maxn
             except_text.draw()
             pygame.display.flip()
             pygame.time.wait(1000)
@@ -262,10 +259,7 @@ class TextArea:
             self.color = RED_COLOR if self.active else LIGHT_GREY_COLOR
         if event.type == pygame.KEYDOWN:
             if self.active:
-                if event.key == pygame.K_RETURN:
-                    print(self.text)
-                    self.text = ''
-                elif event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     pygame.time.wait(150)
                 else:
@@ -281,9 +275,24 @@ class TextArea:
     def check(self):
         return self.min_num <= int(self.getText()) <= self.max_num
 
+    def update_min_max_values(self, min, max):
+        self.max_num = max
+        self.min_num = min
 
 class Text:
     def __init__(self, screen, x, y, width, height, font, font_size, text_color, text=''):
+        """
+
+        :param screen:
+        :param x:
+        :param y:
+        :param width:
+        :param height:
+        :param font:
+        :param font_size:
+        :param text_color:
+        :param text:
+        """
         self.x = x
         self.y = y
         self.width = width
@@ -295,6 +304,9 @@ class Text:
         self.font_size = font_size
 
     def draw(self):
+        """
+        Draws Text
+        """
         fontText = pygame.font.SysFont(self.font, self.font_size)
         textSurf = fontText.render(self.text, True, self.color)
         textRect = textSurf.get_rect()
