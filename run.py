@@ -77,8 +77,6 @@ class Game:
         Stops main loop and resets game
         """
         self.restart = True
-        global B_HEIGHT
-        B_HEIGHT = 10
 
     def draw(self):
         """
@@ -123,6 +121,7 @@ class Game:
                 raise FileLoadErrorException
             with open('settings.csv') as cfg:
                 data = cfg.readlines()
+                print("Setttings:")
                 for line in data:
                     setting = line.split(" = ")
                     print(setting[0], " - ", setting[1])

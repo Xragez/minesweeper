@@ -282,7 +282,6 @@ class TextArea:
 class Text:
     def __init__(self, screen, x, y, width, height, font, font_size, text_color, text=''):
         """
-
         :param screen:
         :param x:
         :param y:
