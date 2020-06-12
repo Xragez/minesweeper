@@ -1,10 +1,11 @@
-import pygame, time, sys
+import sys
+import time
+
+import pygame
+
 from colors import *
 from default import *
 
-
-# Number of blocks x and y
-# Number of bombs
 
 class WrongSettingsException(Exception):
     pass
@@ -30,7 +31,7 @@ class InfoScreen:
 
     def button(self, msg, x, y, w, h, ic, ac, action=None):
         """
-        Draws button
+        Draws the button
         :param msg: text which will appear on the button
         :param x: x coord
         :param y: y coord
@@ -61,15 +62,17 @@ class InfoScreen:
 
     def draw_background(self):
         """
-        Draws background
+        Draws the background
         """
-        pygame.draw.rect(self.game.screen, GREY_COLOR, pygame.Rect(self.x, self.y, self.width, self.height))
+        pygame.draw.rect(self.game.screen, GREY_COLOR,
+                         pygame.Rect(self.x, self.y, self.width, self.height))
 
     def draw_timer(self):
         """
-        Draws timer
+        Draws the timer
         """
-        pygame.draw.rect(self.game.screen, BLACK_COLOR, pygame.Rect(self.x + 60, self.y + 10, 60, 20))
+        pygame.draw.rect(self.game.screen, BLACK_COLOR,
+                         pygame.Rect(self.x + 60, self.y + 10, 60, 20))
         font = pygame.font.SysFont("timesnewroman", 20, bold=True)
         font_color = YELLOW_COLOR
         if not self.freeze:
@@ -92,7 +95,7 @@ class InfoScreen:
 
     def draw(self):
         """
-        Draws Info screen with timer, bomb counter and buttons
+        Draws the Info screen with timer, bomb counter and buttons
         """
         button_width = 100
         middle_x = self.x + self.width // 2 - button_width // 2
@@ -113,14 +116,15 @@ class InfoScreen:
         """
 
         smallText = pygame.font.SysFont("timesnewroman", 20)
-        textSurf = smallText.render("Bombs: " + str(+self.game.game_screen.bomb_flag_counter), True, RED_COLOR)
+        textSurf = smallText.render("Bombs: " +
+                                    str(+self.game.game_screen.bomb_flag_counter), True, RED_COLOR)
         textRect = textSurf.get_rect()
         textRect.center = (self.x + self.width // 2, self.y + self.height // 3)
         self.game.screen.blit(textSurf, textRect)
 
     def end_msg(self):
         """
-        Draws end message (You Win or Game Over)
+        Draws the end message (You Win or Game Over)
         """
         msg = ''
         if self.game.win == 1:
@@ -139,7 +143,6 @@ class MenuScreen(InfoScreen):
 
     def __init__(self, game, x, y, width, height):
         """
-
         :param game: game object
         :param x: left upper side x coord
         :param y: left upper side y coord
@@ -148,15 +151,23 @@ class MenuScreen(InfoScreen):
         """
         super().__init__(game, x, y, width, height)
         self.screen = game.screen
-        self.bw = TextArea(self.screen, x + 40, y + 50, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bw))
-        self.bh = TextArea(self.screen, x + 40, y + 90, 40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bh))
+        self.bw = TextArea(self.screen, x + 40, y + 50,
+                           40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bw))
+        self.bh = TextArea(self.screen, x + 40, y + 90,
+                           40, 30, BOARD_MIN, BOARD_MAX, str(self.game.bh))
         self.nob = TextArea(self.screen, x + 40, y + 190, 40, 30, BOMB_MIN,
-                            int(self.bw.getText()) * int(self.bh.getText()), str(self.game.num_of_bombs))
-        self.bw_text = Text(self.screen, x + 110, y + 60, 20, 20, "timesnewroman", 20, BLACK_COLOR, "Width")
-        self.bh_text = Text(self.screen, x + 110, y + 100, 20, 20, "timesnewroman", 20, BLACK_COLOR, "Height")
-        self.nob_text = Text(self.screen, x + 110, y + 200, 20, 20, "timesnewroman", 20, BLACK_COLOR, "Bombs")
-        self.board = Text(self.screen, x + width // 2, y + 20, 1, 1, "timesnewroman", 20, BLACK_COLOR, "Board:")
-        self.info_text = Text(self.screen, x + width // 2, y + 250, 1, 1, "timesnewroman", 15, BLACK_COLOR, None)
+                            int(self.bw.getText()) * int(self.bh.getText()),
+                            str(self.game.num_of_bombs))
+        self.bw_text = Text(self.screen, x + 110, y + 60,
+                            20, 20, "timesnewroman", 20, BLACK_COLOR, "Width")
+        self.bh_text = Text(self.screen, x + 110, y + 100,
+                            20, 20, "timesnewroman", 20, BLACK_COLOR, "Height")
+        self.nob_text = Text(self.screen, x + 110, y + 200,
+                             20, 20, "timesnewroman", 20, BLACK_COLOR, "Bombs")
+        self.board = Text(self.screen, x + width // 2, y + 20,
+                          1, 1, "timesnewroman", 20, BLACK_COLOR, "Board:")
+        self.info_text = Text(self.screen, x + width // 2, y + 250,
+                              1, 1, "timesnewroman", 15, BLACK_COLOR, None)
 
     def on_button_click(self):
         self.game.show_menu = True
@@ -166,7 +177,7 @@ class MenuScreen(InfoScreen):
 
     def draw(self):
         """
-        Draws menu screen
+        Draws the  menu screen
         """
         self.draw_background()
         button_width = 100
@@ -188,7 +199,8 @@ class MenuScreen(InfoScreen):
         if self.nob.info is not None:
             self.info_text.text = self.nob.info
         if not (self.bw.getText() == '' or self.bh.getText() == ''):
-            self.nob.update_min_max_values(self.nob.min_num, int(self.bw.getText()) * int(self.bh.getText()))
+            self.nob.update_min_max_values(self.nob.min_num,
+                                           int(self.bw.getText()) * int(self.bh.getText()))
         self.board.draw()
         self.info_text.draw()
 
@@ -198,6 +210,10 @@ class MenuScreen(InfoScreen):
         self.nob.events(event)
 
     def apply(self):
+        """
+        Applays the settings
+        :return:
+        """
         try:
             if self.bw.check() and self.bh.check() and self.nob.check():
                 self.game.apply_settings()
@@ -205,7 +221,8 @@ class MenuScreen(InfoScreen):
                 raise WrongSettingsException
         except WrongSettingsException:
             except_text = Text(self.screen, self.x + self.width // 2,
-                               self.height // 2, 1, 1, "timesnewroman", 20, RED_COLOR, "Wrong value!")
+                               self.height // 2, 1, 1, "timesnewroman",
+                               20, RED_COLOR, "Wrong value!")
             self.on_button_click()
             except_text.draw()
             pygame.display.flip()
@@ -213,7 +230,8 @@ class MenuScreen(InfoScreen):
 
         except ValueError:
             except_text = Text(self.screen, self.x + self.width // 2,
-                               self.height // 2, 1, 1, "timesnewroman", 20, RED_COLOR, "No value!")
+                               self.height // 2, 1, 1, "timesnewroman",
+                               20, RED_COLOR, "No value!")
             self.on_button_click()
             except_text.draw()
             pygame.display.flip()
@@ -223,6 +241,17 @@ class MenuScreen(InfoScreen):
 
 class TextArea:
     def __init__(self, screen, x, y, w, h, min, max, text=''):
+        """
+        Makes the area where you can type text
+        :param screen: pygame screen
+        :param x: x
+        :param y: y
+        :param w: width
+        :param h: height
+        :param min: minimum value that can be typed in
+        :param max: maximum value that can be typed in
+        :param text: default text
+        """
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.color = LIGHT_GREY_COLOR
@@ -241,6 +270,10 @@ class TextArea:
         return self.text
 
     def draw(self, screen):
+        """
+        Draw the text area on the screen
+        :param screen: pygame screen
+        """
         self.screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
         pygame.draw.rect(screen, self.color, self.rect, 2)
         self.txt_surface = self.font.render(self.text, True, self.text_color)
@@ -250,6 +283,10 @@ class TextArea:
             self.info = None
 
     def events(self, event):
+        """
+        Handles the events
+        :param event: pygame event
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 self.active = not self.active
@@ -280,17 +317,19 @@ class TextArea:
         self.min_num = min
 
 class Text:
-    def __init__(self, screen, x, y, width, height, font, font_size, text_color, text=''):
+    def __init__(self, screen, x, y, width, height,
+                 font, font_size, text_color, text=''):
         """
-        :param screen:
-        :param x:
-        :param y:
-        :param width:
-        :param height:
-        :param font:
-        :param font_size:
-        :param text_color:
-        :param text:
+        Shows text with the given color and font is the given position
+        :param screen: pygame screen
+        :param x: x coord
+        :param y: y coord
+        :param width: width
+        :param height: height
+        :param font: font type
+        :param font_size: font size
+        :param text_color: text color
+        :param text: text
         """
         self.x = x
         self.y = y

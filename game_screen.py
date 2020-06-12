@@ -1,7 +1,6 @@
 import random
 import pygame
-from default import *
-from colors import *
+from colors import LIGHT_GREY_COLOR
 from block import Block
 
 
@@ -56,7 +55,8 @@ class GameScreen:
         """
         x0 = (self.board_width - self.width) // 2
         y0 = (self.board_height - self.height) // 2
-        pygame.draw.rect(self.game.screen, LIGHT_GREY_COLOR, pygame.Rect(x0, y0, self.width, self.height))
+        pygame.draw.rect(self.game.screen, LIGHT_GREY_COLOR,
+                         pygame.Rect(x0, y0, self.width, self.height))
 
     def neighbours_list(self, block):
         """
@@ -69,8 +69,8 @@ class GameScreen:
         list = []
         for a in range(i - 1, i + 2, 1):
             for b in range(j - 1, j + 2, 1):
-                if ((a >= 0 and a <= (self.bw - 1)) and
-                        (b >= 0 and b <= (self.bh - 1)) and
+                if ((0 <= a <= (self.bw - 1)) and
+                        (0 <= b <= (self.bh - 1)) and
                         (a != i or b != j)):
                     list.append((a, b))
         return list
@@ -135,7 +135,7 @@ class GameScreen:
         """
         coordinates = pygame.mouse.get_pos()
         i, j = self.coords(coordinates)
-        if not (i, j) == (-1, -1):
+        if (i, j) != (-1, -1):
             if self.game_net[i][j].status == 0:
                 if self.game_net[i][j].isBomb:
                     return True
@@ -150,7 +150,7 @@ class GameScreen:
         """
         coordinates = pygame.mouse.get_pos()
         i, j = self.coords(coordinates)
-        if not (i, j) == (-1, -1):
+        if (i, j) != (-1, -1):
             if self.game_net[i][j].status == 2:
                 self.bomb_flag_counter += 1
                 self.game_net[i][j].set_maybe_flag()

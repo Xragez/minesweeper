@@ -1,6 +1,7 @@
 import pygame
 from colors import *
 
+
 class Block:
     """
     status:
@@ -9,6 +10,7 @@ class Block:
         2 - bomb flag
         3 - "may be bomb" flag
     """
+
     def __init__(self, screen, size):
         self.screen = screen
         self.x = 0
@@ -21,6 +23,7 @@ class Block:
         self.neighbours = 0
         self.bomb_draw = False
         self.cheats_enabled = False
+        self.color = None
 
     def draw(self):
         """
@@ -62,9 +65,8 @@ class Block:
 
         if self.bomb_draw:
             self.neighbours = 0
-            pygame.draw.circle(self.screen, BLACK_COLOR, (self.x + self.size // 2, self.y + self.size // 2),
-                               self.size // 4)
-
+            pygame.draw.circle(self.screen, BLACK_COLOR,
+                               (self.x + self.size // 2, self.y + self.size // 2), self.size // 4)
 
     def reveal(self):
         """

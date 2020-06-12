@@ -1,13 +1,18 @@
 import os
-from default import *
-import pygame, sys
-from info_screen import MenuScreen
-from info_screen import InfoScreen
-from game_screen import GameScreen
+import sys
 import time
+
+import pygame
+
+from default import *
+from game_screen import GameScreen
+from info_screen import InfoScreen
+from info_screen import MenuScreen
+
 
 class FileLoadErrorException(Exception):
     pass
+
 
 class Game:
 
@@ -47,8 +52,7 @@ class Game:
                         key_queue.pop(0)
                     if key_queue == cheat_code:
                         self.xyzzy()
-                if (event.type == pygame.QUIT or
-                        (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
+                if event.type == pygame.QUIT:
                     sys.exit(0)
                 if not self.freeze:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT:
@@ -116,19 +120,22 @@ class Game:
         self.draw()
 
     def load_settings(self):
+        """
+        Loads settings from settings.csv file
+        """
         try:
             if not os.path.isfile("settings.csv"):
                 raise FileLoadErrorException
             with open('settings.csv') as cfg:
                 data = cfg.readlines()
-                print("Setttings:")
+                print("Settings:")
                 for line in data:
                     setting = line.split(" = ")
                     print(setting[0], " - ", setting[1])
-                    if setting[0] =='B_WIDTH':
+                    if setting[0] == 'B_WIDTH':
                         global B_WIDTH
                         B_WIDTH = int(setting[1])
-                    if setting[0] =='B_HEIGHT':
+                    if setting[0] == 'B_HEIGHT':
                         global B_HEIGHT
                         B_HEIGHT = int(setting[1])
                     if setting[0] == 'NUM_OF_BOMBS':
