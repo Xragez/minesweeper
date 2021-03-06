@@ -40,9 +40,6 @@ wszystkich pól z minami (i żadnych innych).
 - Po naciśnięciu kolejno klawiszy x, y, z, z, y, pola pod którymi są miny stają się
 ciemniejsze (
 
-
-[*Link do opisu*](http://elf2.pk.edu.pl/pluginfile.php/88409/mod_resource/content/15/Projekty_JS_2020_wytyczne.pdf)
-
 ##### Klasy:
 * [Block](https://github.com/Xragez/minesweeper/blob/8d6aebae3b09ba6f76f9a80dccc0db20e46a240e/block.py#L5)
 * [GameScreen](https://github.com/Xragez/minesweeper/blob/8d6aebae3b09ba6f76f9a80dccc0db20e46a240e/game_screen.py#L7)
