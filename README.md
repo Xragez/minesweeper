@@ -1,8 +1,47 @@
-# Projekt nr 13: Saper
+# Saper
+
+- Okno jest podzielone na planszę do gry oraz boczny ekran z informacjami (timer, ilośc bomb, przyciski do:  restartu, menu ustawień i wyjścia).
+
+- Ustawienia wielkości planszy i ilości bomb są wczytywane z pliku settings.csv (jeśli program nie może znaleźć pliku z ustawieniami to wczytuje domyślne podane w pliku default.py).
+
+- Po kliknięciu przycisku Apply ustawienia zapisują się do pliku settings.csv, a gra restartuje się z nowymi ustawieniami.
+
+- W menu nie da się wpisać liczb ujemnych, a po wpisaniu liczb wychodzących poza zakres lub przy zostawieniu pustego pola wyświetlą się odpowiednie komunikaty i zapis będzie niemożliwy.
+
+- Licznik bomb wyświetla ile bomb zostało do zaznaczenia.
+
+- Po przegranej lub wygranej partii pod przyciskiem Restart pojawi się odpowiedni komunikat (You Win lub Game Over), a plansza i timer zostaną zamrożone.
+
+- Główne okno jest podzielone na planszę do gry oraz boczny ekran z informacjami (timer, ilośc bomb, przyciski do:  restartu, menu ustawień i wyjścia).
+
+- Menu ustawień zawiera trzy pola tekstowe: 
+	- pole do wprowadzenia szerokości planszy
+	- pole do wprowadzenia wysokości planszy
+	- pole do wprowadzenia ilości bomb
+
+- Wprowadzenie mniejszego rozmiaru planszy niż 2x2 lub większego niż 15x15, liczby
+bomb mniejszej niż 0 lub większej niż m*n powoduje wyświetlenie komunikatu o
+błędzie. Nie można rozpocząć gry dopóki te parametry nie są poprawne.
+
+- Na początku gry na losowych polach umieszczane jest tyle min ile wskazano w polu
+	tekstowym (każde możliwe rozłożenie min jest równie prawdopodobne).
+ - Po kliknięciu lewym przyciskiem na pole:
+	- Jeśli jest tam mina, wyświetlana jest wiadomość o przegranej i gra się
+kończy,
+	- Jeśli w sąsiedztwie pola są miny, na przycisku wyświetlana jest ich liczba a
+pole dezaktywuje się,
+- W przeciwnym razie sąsiednie pola są sprawdzane tak jakby zostały kliknięte
+a pole dezaktywuje się.
+- Po kliknięciu prawym przyciskiem pole może zostać oznaczone “tu jest mina”, po
+ponownym kliknięciu oznaczenie zmienia się na “tu może być mina”, a po kolejnym
+kliknięciu oznaczenie znika.
+- Gra kończy się po kliknięciu wszystkich pól bez min, lub oznaczeniu “tu jest mina”
+wszystkich pól z minami (i żadnych innych).
+- Po naciśnięciu kolejno klawiszy x, y, z, z, y, pola pod którymi są miny stają się
+ciemniejsze (
+
 
 [*Link do opisu*](http://elf2.pk.edu.pl/pluginfile.php/88409/mod_resource/content/15/Projekty_JS_2020_wytyczne.pdf)
-##### List comprehensions:
-* [tutaj](https://github.com/Xragez/minesweeper/blob/8d6aebae3b09ba6f76f9a80dccc0db20e46a240e/game_screen.py#L25)
 
 ##### Klasy:
 * [Block](https://github.com/Xragez/minesweeper/blob/8d6aebae3b09ba6f76f9a80dccc0db20e46a240e/block.py#L5)
@@ -16,17 +55,3 @@
 ##### Wyjątki:
 * [WrongSettingsException, ValueError](https://github.com/Xragez/minesweeper/blob/8d6aebae3b09ba6f76f9a80dccc0db20e46a240e/info_screen.py#L217)
 * [FileLoadErrorException](https://github.com/Xragez/minesweeper/blob/8d6aebae3b09ba6f76f9a80dccc0db20e46a240e/run.py#L127)
-
-##### Projekt minimalnie różni się od opisu zadania, ale zawarte są w nim wszystkie wymienione tam funkcjonalności razem z kodem xyzzy na zaznaczanie bomb.
-
-* Okno jest podzielone na planszę do gry oraz boczny ekran z informacjami (timer, ilość bomb, przyciski do:  restartu, menu ustawień i wyjścia).
-
-* Ustawienia wielkości planszy i ilości bomb są wczytywane z pliku settings.csv (jeśli program nie może znaleźć pliku z ustawieniami to wczytuje domyślne podane w pliku default.py).
-
-* Po kliknięciu przycisku Apply ustawienia zapisują się do pliku settings.csv, a gra restartuje się z nowymi ustawieniami.
-
-* W menu nie da się wpisać liczb ujemnych, a po wpisaniu liczb wychodzących poza zakres lub przy zostawieniu pustego pola wyświetlą się odpowiednie komunikaty i zapis będzie niemożliwy.
-
-* Licznik bomb wyświetla ile bomb zostało do zaznaczenia.
-
-* Po przegranej lub wygranej partii pod przyciskiem Restart pojawi się odpowiedni komunikat (You Win lub Game Over), a plansza i timer zostaną zamrożone.
